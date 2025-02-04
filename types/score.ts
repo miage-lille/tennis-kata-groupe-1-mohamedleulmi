@@ -1,4 +1,5 @@
 
+import { Option } from 'fp-ts/lib/Option';
 import { Player } from './player';
 
 // Surely not the best choice
@@ -76,6 +77,10 @@ export const forty: (player: Player, otherPoint: Point) => Forty = (player, othe
 
 export const thirty:() => Thirty = () => ({
   kind: 'THIRTY',
+});
+
+export const fifteen:() => Fifteen = () => ({
+  kind: 'FIFTEEN',
 });
 
 export const deuce: () => Deuce = () => ({

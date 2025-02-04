@@ -1,7 +1,7 @@
 import { isSamePlayer, Player } from './types/player';
-import { advantage, deuce, FortyData, game, Point, PointsData, Score } from './types/score';
-// import { none, Option, some, match as matchOpt } from 'fp-ts/Option';
-// import { pipe } from 'fp-ts/lib/function';
+import { advantage, deuce, FortyData, game, Point, points, PointsData, Score, thirty, fifteen, forty } from './types/score';
+import { none, Option, some, match as matchOpt } from 'fp-ts/Option';
+import { pipe } from 'fp-ts/lib/function';
 
 // -------- Tooling functions --------- //
 
@@ -59,15 +59,31 @@ export const scoreWhenAdvantage = (
   return deuce();
 };
 
+
+export const incrementPoint = (point: Point): Option<Point> => {
+  switch (point.kind) {
+    case 'LOVE':
+      return some(fifteen());
+    case 'FIFTEEN':
+      return some(thirty());
+    case 'THIRTY':
+      return none;
+  }
+};
+
 export const scoreWhenForty = (
   currentForty: FortyData,
   winner: Player
-): Score =>{
+): Score => {
   if (isSamePlayer(currentForty.player, winner)) return game(winner);
-  if (currentForty.otherPoint.kind === 'THIRTY') return deuce();
-  return points(currentForty.otherPoint, currentForty.otherPoint);
-}
-
+  return pipe(
+    incrementPoint(currentForty.otherPoint),
+    matchOpt(
+      () => deuce(),
+      p => forty(currentForty.player, p) as Score
+    )
+  );
+};
 export const scoreWhenGame = (winner: Player): Score => {
   throw new Error('not implemented');
 };
@@ -76,8 +92,8 @@ export const scoreWhenGame = (winner: Player): Score => {
 // Tip: You can use pipe function from fp-ts to improve readability.
 // See scoreWhenForty function above.
 export const scoreWhenPoint = (current: PointsData, winner: Player): Score => {
-  throw new Error('not implemented');
 };
+  
 
 export const score = (currentScore: Score, winner: Player): Score => {
   throw new Error('not implemented');
